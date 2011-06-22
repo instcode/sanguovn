@@ -282,10 +282,6 @@
     NJMC.CLOSED = 3;
 
     NJMC.initialize = function() {
-        if (WebSocket.__initialize !== undefined) {
-            WebSocket.__initialize();
-        };
-		
         NJMC.__ws = new WebSocket('ws://' + NJMC.self.server);
 
         NJMC.__ws.onopen = function(event) {
@@ -316,14 +312,14 @@
 })();
 
 var Presence = {
-    ONLINE : 0,
-    OFFLINE : 1
+    ONLINE: 0,
+    OFFLINE: 1
 };
 
 var Channel = {
     Type: {
-        ROOM : 0,
-        PRIVATE : 1
+        ROOM: 0,
+        PRIVATE: 1
     },
     Mode: {
         PUBLIC: 0,

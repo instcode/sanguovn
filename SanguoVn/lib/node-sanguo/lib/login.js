@@ -51,7 +51,7 @@ Login.prototype.login = function(username, password, server, handler) {
                 res.setEncoding('utf8');
                 var body = '';
                 res.on('data', function (chunk) {
-			        body += chunk;
+                    body += chunk;
                 });
                 res.on('end', function () {
                     var re = /var flashvars = ([^}]*});/;
