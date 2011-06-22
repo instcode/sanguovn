@@ -18,7 +18,7 @@ node-message:
 	
 node-websocket-server:
 
-	git clone git://github.com/miksago/node-websocket-server
+    git clone git://github.com/miksago/node-websocket-server
 	
 ## Usage
 
