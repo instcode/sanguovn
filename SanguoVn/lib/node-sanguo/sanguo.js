@@ -20,14 +20,34 @@ var clearMap = function(bot, index) {
     //bot.send(Message.OPEN_POWERMAP);
     //bot.send(Message.BATTLE, [index]);
     var command = bot.create(Message.BATTLE_GET_REWARDS, [index]);
-    var count = 0;
+    var success = 0;
+    var failure = 0;
     bot.flood(command, 500, function(json) {
         if (json.m.message[0] !== 'N') {
-            console.log('Reward [' + count + '] ' + JSON.stringify(json.m));
-            count++;
+            success++;
         }
         else {
-            console.log('Fail!');
+            failure++;
+        }
+        if (success + failure > 400) {
+            console.log('Reward [' + success + '] ' + JSON.stringify(json.m));
+        }
+    });
+}
+
+var collectGift = function(bot, giftcode) {
+    var command = bot.create(Message.RECEIVE_GIFT, [giftcode]);
+    var success = 0;
+    var failure = 0;
+    bot.flood(command, 500, function(json) {
+        if (json.m.message[0] !== 'T') {
+            success++;
+        }
+        else {
+            failure++;
+        }
+        if (success + failure > 400) {
+            console.log('Gift [' + success + '] ' + JSON.stringify(json.m));
         }
     });
 }
@@ -47,7 +67,12 @@ login.login(username, password, server, function(userinfo) {
             console.log(now + ' - Connected successfully.');
             //console.log('Service [' + json.h + ']\t' + JSON.stringify(json.m));
             console.log('Service [' + json.h + ']');
-            clearMap(bot, 4);
+            
+            var map = '1';
+            clearMap(bot, map);
+
+            var giftcode = '';
+            collectGift(bot, giftcode);
         }
     });
 
