@@ -69,7 +69,7 @@ Sanguo.prototype.create = function(service, params) {
     if (undefined === params) {
         params = [''];
     }
-    md5hash.update(service + uid + params.join() + salt);
+    md5hash.update(service + uid + params.join('') + salt);
     var checksum = md5hash.digest('hex');
     var msg = service + '\1' + uid + '\t' + session +
         '\2' + params.join('\t') + '\3' +
