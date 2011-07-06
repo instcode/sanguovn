@@ -1,50 +1,20 @@
-#chat {
-    height: 300px;
-    overflow: auto;
-    width: 800px;
-    border: 1px solid #eee;
-    font: 13px Helvetica, Arial;
+body {
+
 }
 
-#chat p {
-    padding: 8px;
-    margin: 0;
+#mainBody {
 }
 
-#chat p:nth-child(odd) {
-    background: #F6F6F6;
+#mainContainer {
+    margin: 0 auto;
+    width: 1000px;
 }
 
-#form {
-    width: 782px;
-    background: #333;
-    padding: 5px 10px;
-    display: none;
+.header_title h2{
+    text-align:center;
 }
 
-#txtMessage {
-    width: 700px;
-    padding: 5px;
-    background: #fff;
-    border: 1px solid #fff;
-}
-
-#btnSend {
-    cursor: pointer;
-    background: #999;
-    border: none;
-    padding: 6px 8px;
-    -moz-border-radius: 8px;
-    -webkit-border-radius: 8px;
-    margin-left: 5px;
-    text-shadow: 0 1px 0 #fff;
-}
-
-#btnSend:hover {
-    background: #A2A2A2;
-}
-
-#btnSend:active {
-    position: relative;
-    top: 2px;
+#loginBox .input_label {
+    float: left;
+    width: 100px;
 }

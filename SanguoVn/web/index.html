@@ -1,18 +1,54 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>NodeJS Message Client</title>
+    <title>VLTK - WELCOME TO THE HELL</title>
     <link rel='stylesheet' type='text/css' href='./css/style.css' />
     <script type="text/javascript" src="./js/jquery/jquery.js"></script>
-    <script type="text/javascript" src="./js/common.js"></script>
+    <script type="text/javascript" src="./js/constants.js"></script>
+    <script type="text/javascript" src="./js/sanguo.js"></script>
 </head>
 <body>
-    <h2>CHAT SYSTEM</h2>
-    <div>Enter nickname to join...</div>
-    <div><input type='text' id='txtNickName' value='none' name='txtNickName' />&nbsp;
-        <input type='text' id='txtPort' value='' />&nbsp;
-        <button id='btnConnect'>Connect</button>&nbsp;
+    <div id='mainBody'>
+        <div id='mainContainer'>
+            <div class="header_title">
+                <h2>VLTK CONTROL PANEL</h2>
+            </div>
+            <div class='centerContainer'>
+                <div id='loginBox'>
+                    <div>
+                        <h4>ACCOUNT</h4>
+                    </div>
+                    <div>
+                        <div class="input_label">Username: </div><div><input id="txtUsername" name="txtUsername" type="text"/></div>
+                    </div>
+                    <div>
+                        <div class="input_label">Password: </div><div><input id="txtPassword" name="txtPassword" type="password" /></div>
+                    </div>
+                    <div>
+                        <div class="input_label">Server</div><div><select id='lstServer' name="lstServer"></select></div>
+                    </div>
+                </div>
+                <div id='actionBox'>
+                    <div>
+                        <h4>ACTIONS</h4>
+                    </div>
+                    <div>
+                        <div class="input_label">Map</div>
+                        <div>
+                            <select id='lstMap' name='lstMap'></select>
+                            <button>Clear</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="input_label"></div>
+                        <div>
+                            <select id='lstNpc' name='lstNpc'></select>
+                            <button>Attack</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div id="roomchat"></div>
 </body>
 </html>
