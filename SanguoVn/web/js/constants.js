@@ -27,7 +27,7 @@ servers = [
 ];
 
 maps = [
-    {id: '1', name: 'Giặt Khăn Vàng', npc: []},
+    {id: '1', name: 'Giặc Khăn Vàng', npc: []},
     {id: '2', name: 'Đổng Trác', npc: [
         {id: 1223, name: 'Phiền Trù', item: 'Ngân Quân Khải', color: 'white', price:'0'},
         {id: 1224, name: 'Trương Tể', item: 'Hàn Băng Kiếm', color: 'green', price:'3750'},
