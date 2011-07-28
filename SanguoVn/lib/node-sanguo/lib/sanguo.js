@@ -31,9 +31,12 @@ util.inherits(Sanguo, events.EventEmitter);
 Sanguo.prototype.connect = function() {
     var self = this;
     this.socket.on('connect', function() {
-        self.send(self.create(Message.USER_LOGIN));
+        if (undefined === self.options.login) {
+            self.send(self.create(Message.USER_LOGIN));
+            self.send(self.create(Message.CHAT_GET_MESSAGE));
+            self.options.login = true;
+        }
         self.send(self.create(Message.SERVER_GET_PLAYER_INFO));
-        self.send(self.create(Message.CHAT_GET_MESSAGE));
         //self.send(self.create(Message.MAIN_CITY, ['1']));
     });
 
@@ -88,10 +91,7 @@ Sanguo.prototype.create = function(service, params) {
  * @callback Callback function. Can be omitted.
  */
 Sanguo.prototype.send = function(command, callback) {
-    if (undefined !== callback) {
-        this.once(command.svc, callback);
-    }
-    this.socket.write(command.msg);
+    this.flood(command, 1, callback);
 }
 
 /**
@@ -113,13 +113,14 @@ Sanguo.prototype.flood = function(command, number, callback) {
     if (undefined !== callback && number > 0) {
         var count = number;
         var self = this;
-        self.on(command.svc, function(json) {
+        var handler = function(json) {
             callback(json);
             count--;
             if (count == 0) {
-                self.removeListener(command.svc, callback);
+                self.removeListener(command.svc, handler);
             }
-        });
+        }
+        self.on(command.svc, handler);
     }
     this.socket.write(buffer);
 }
@@ -132,4 +133,66 @@ Sanguo.prototype._parseChunk = function(chunk, callback) {
     }
     this.buffer = messages[messages.length - 1];
 }
+
+Sanguo.prototype.enumItemsInStore = function(callback) {
+    var command = this.create(Message.STOREHOUSE, ['0', '15'])
+    this.send(command, function(json) {
+        var store = json.m.storehousedto;
+        for (var item in store) {
+            callback(store[item]);
+        }
+    });
+}
+
+Sanguo.prototype.equip = function(itemId, generalId, callback) {
+    var command = this.create(Message.EQUIP_TAKE, [itemId, generalId]);
+    this.send(command, callback);
+}
+
+Sanguo.prototype.unequip = function(itemId, generalId, callback) {
+    var command = this.create(Message.EQUIP_TAKE_OFF, [itemId, generalId]);
+    this.send(command, callback);
+}
+
+Sanguo.prototype.sell = function(itemId, callback) {
+    var command = this.create(Message.SELL_GOODS, [itemId, '-1']);
+    this.send(command, callback);
+}
+
+Sanguo.prototype.market = function(type, amount, callback) {
+    var command = this.create(Message.MAIN_CITY_FOOD_BAND_C, [type, amount]);
+    this.send(command, callback);
+}
+
+Sanguo.prototype.enumGeneralEquipments = function(generalId, callback) {
+    var command = this.create(Message.EQUIP_GET_GENERAL_EQUIP, [generalId]);
+    var id = generalId;
+    this.send(command, function(json) {
+        var equipments = json.m.equip;
+        for (var item in equipments) {
+            callback(equipments[item]);
+        }
+    });
+}
+
+Sanguo.prototype.enumRecruitGenerals = function(callback) {
+    var command = this.create(Message.GENERAL_GET_ONLINE)
+    this.send(command, function(json) {
+        var generals = json.m.general;
+        for (var key in generals) {
+            callback(generals[key]);
+        }
+    });
+}
+
+Sanguo.prototype.enumGenerals = function(callback) {
+    var command = this.create(Message.GENERAL_GET_LIST2, [0]);
+    this.send(command, function(json) {
+        var generals = json.m.general;
+        for (var key in generals) {
+            callback(generals[key]);
+        }
+    });
+}
+
 
