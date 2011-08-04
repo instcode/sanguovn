@@ -64,7 +64,7 @@ Sanguo.prototype.connect = function() {
  * @service Service number which is specified in Message#<service>
  * @params An array of parameters. Can be empty/omitted.
  */
-Sanguo.prototype.create = function(service, params) {
+Sanguo.prototype.create = function(service, params, malform) {
     var uid = this.options.userID;
     var session = this.options.sessionKey;
     var md5hash = crypto.createHash('md5');
@@ -72,7 +72,12 @@ Sanguo.prototype.create = function(service, params) {
     if (undefined === params) {
         params = [''];
     }
-    md5hash.update(service + uid + params.join('') + salt);
+    if (undefined !== malform) {
+        md5hash.update(service + uid + salt);
+    }
+    else {
+        md5hash.update(service + uid + params.join('') + salt);
+    }
     var checksum = md5hash.digest('hex');
     var msg = service + '\1' + uid + '\t' + session +
         '\2' + params.join('\t') + '\3' +
@@ -135,13 +140,43 @@ Sanguo.prototype._parseChunk = function(chunk, callback) {
 }
 
 Sanguo.prototype.enumItemsInStore = function(callback) {
-    var command = this.create(Message.STOREHOUSE, ['0', '15'])
+    var command = this.create(Message.STOREHOUSE, [0, 15])
     this.send(command, function(json) {
         var store = json.m.storehousedto;
         for (var item in store) {
             callback(store[item]);
         }
     });
+}
+
+Sanguo.prototype.enumEquipments = function(callback) {
+    var command = this.create(Message.EQUIP_GET_UPGRADE_INFO, [0, 0, 100])
+    this.send(command, function(json) {
+        var equipments = json.m.equip;
+        for (var item in equipments) {
+            callback(equipments[item]);
+        }
+    });
+}
+
+Sanguo.prototype.recruit = function(generalId, callback) {
+    var command = this.create(Message.GENERAL_RECRUIT, [generalId]);
+    this.send(command, callback);
+}
+
+Sanguo.prototype.getUpgradeInfo = function(callback) {
+    var command = this.create(Message.EQUIP_GET_UPGRADE_INFO, [0, 0, 100]);
+    this.send(command, callback);
+}
+
+Sanguo.prototype.upgrade = function(itemId, useGold, magic, callback) {
+    var command = this.create(Message.EQUIP_UPGRADE, [itemId, useGold, magic]);
+    this.send(command, callback);
+}
+
+Sanguo.prototype.downgrade = function(itemId, magic, callback) {
+    var command = this.create(Message.EQUIP_DEBS, [itemId, 0, magic]);
+    this.send(command, callback);
 }
 
 Sanguo.prototype.equip = function(itemId, generalId, callback) {
@@ -155,8 +190,50 @@ Sanguo.prototype.unequip = function(itemId, generalId, callback) {
 }
 
 Sanguo.prototype.sell = function(itemId, callback) {
-    var command = this.create(Message.SELL_GOODS, [itemId, '-1']);
+    var command = this.create(Message.SELL_GOODS, [itemId, '10']);
     this.send(command, callback);
+}
+
+Sanguo.prototype.buy = function(goods, callback) {
+    var command = this.create(Message.BUY_GOODS, goods);
+    this.send(command, callback);
+}
+
+Sanguo.prototype.trade = function(type, useGold, callback) {
+    var command = this.create(Message.MARKET_TRADE, [type, useGold]);
+    this.send(command, callback);
+}
+
+Sanguo.prototype.autoTrade = function(type, callback) {
+    var command = this.create(Message.MARKET_TRADE, [type, 0]);
+    this.send(command, callback);
+}
+
+Sanguo.prototype.weave = function(type) {
+    var self = this;
+    self.on(Message.PUSH_TEXTILE_TEAM, function(json) {
+        console.log(JSON.stringify(json));
+        var teamId = json.m.teamObject.teamid;
+        if (undefined !== teamId) {
+            var command = self.create(Message.TEXTILE_JOIN_TEAM, [teamId]);
+            self.send(command);
+            self.send(command);
+            self.send(command, function(json) {
+                console.log(JSON.stringify(json));
+                var command = self.create(Message.TEXTILE_START, [teamId]);
+                self.send(command, function(json) {
+                    console.log(JSON.stringify(json));
+                });
+            });
+        }
+        else {
+        }
+    });
+    var command = this.create(Message.CREATE_TEXTILE_TEAM, [1, 0, 0]);
+    this.send(command, function(json) {
+        console.log(JSON.stringify(json));
+    });
+
 }
 
 Sanguo.prototype.market = function(type, amount, callback) {
